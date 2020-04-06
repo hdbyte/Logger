@@ -32,20 +32,20 @@ namespace HDByte.Logger
             return _instance;
         }
 
-        public LoggerService GetDefaultDebuggingLogger()
+        public LoggerService GetDefaultLogger()
         {
             LoggerService logger;
 
             lock (_padLockDebugging)
             {
-                var loggerName = "DefaultDebuggingLogger";
+                var loggerName = "DefaultLogger";
                 if (IsLoggerActive(loggerName))
                 {
                     logger = GetLogger(loggerName);
                 } else
                 {
                     logger = CreateLogger(loggerName)
-                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
+                        .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
                 }
             }
 
