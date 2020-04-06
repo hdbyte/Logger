@@ -37,7 +37,7 @@ namespace HDByte.Logger
         {
             foreach(IListener listener in _listeners)
             {
-                listener.Log(message);
+                listener.LogAction(message);
             }
         }
 

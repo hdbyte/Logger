@@ -4,7 +4,7 @@
     {
         string Name { get; set; }
         LoggingLevel MinimumImportance { get; set; }
-        void Log(LogMessage message);
+        void LogAction(LogMessage message);
         void Start();
         void End();
     }

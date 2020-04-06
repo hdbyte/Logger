@@ -25,7 +25,7 @@ namespace HDByte.Logger.Listeners
 
         }
 
-        public void Log(LogMessage message)
+        public void LogAction(LogMessage message)
         {
             if (message.Importance >= MinimumImportance)
             {

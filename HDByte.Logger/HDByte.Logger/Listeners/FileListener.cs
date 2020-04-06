@@ -49,7 +49,7 @@ namespace HDByte.Logger.Listeners
             _stream.Close();
         }
 
-        public void Log(LogMessage message)
+        public void LogAction(LogMessage message)
         {
             if (message.Importance >= MinimumImportance)
             {
