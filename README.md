@@ -46,8 +46,10 @@ Acceptable Variables
 * level - FATAL
 * message - The actual log message to be logged.
 
-### Default Debugging Logger
+## Default Debugging Logger
+This logger stores files in C:\Logs\{processname}\{timestamp}.txt
+
+```csharp
 var Log = LoggerManager.GetLoggerManager().GetDefaultDebuggingLogger();
 Log.Information("information only.......");
-
-This logger stores files in C:\Logs\{processname}\{timestamp}.txt
+```
