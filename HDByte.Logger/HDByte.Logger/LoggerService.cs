@@ -7,20 +7,20 @@ namespace HDByte.Logger
     public class LoggerService
     {
         public string Name { get; set; }
-        public BlockingCollection<IListener> _listenors;
+        public BlockingCollection<IListener> _listeners;
         public BlockingCollection<LogMessage> _pendingMessages { get; set; }
 
         public LoggerService(string name)
         {
             Name = name;
-            _listenors = new BlockingCollection<IListener>();
+            _listeners = new BlockingCollection<IListener>();
         }
 
         public LoggerService AttachListener(LoggingLevel importance, IListener listener)
         {
             listener.Name = Name;
             listener.MinimumImportance = importance;
-            _listenors.Add(listener);
+            _listeners.Add(listener);
             listener.Start();
 
             return this;
@@ -35,7 +35,7 @@ namespace HDByte.Logger
 
         public void Log(LogMessage message)
         {
-            foreach(IListener listener in _listenors)
+            foreach(IListener listener in _listeners)
             {
                 listener.Log(message);
             }
