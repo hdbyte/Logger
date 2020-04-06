@@ -41,6 +41,11 @@ namespace HDByte.Logger
             }
         }
 
+        public void Log(LoggingLevel level, string message)
+        {
+            Push(level, message);
+        }
+
         public void Trace(string message)
         {
             Push(LoggingLevel.Trace, message);
