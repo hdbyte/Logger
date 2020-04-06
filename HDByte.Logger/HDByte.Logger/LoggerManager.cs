@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HDByte.Logger.Listeners;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,7 @@ namespace HDByte.Logger
         private readonly BlockingCollection<LogMessage> _pendingMessages;
         private Thread myThread;
         private static readonly object _padLock = new object();
+        private readonly object _padLockDebugging = new object();
         private static LoggerManager _instance = null;
 
         public static LoggerManager GetLoggerManager()
@@ -30,6 +32,26 @@ namespace HDByte.Logger
             return _instance;
         }
 
+        public LoggerService GetDefaultDebuggingLogger()
+        {
+            LoggerService logger;
+
+            lock (_padLockDebugging)
+            {
+                var loggerName = "DefaultDebuggingLogger";
+                if (IsLoggerActive(loggerName))
+                {
+                    logger = GetLogger(loggerName);
+                } else
+                {
+                    logger = CreateLogger(loggerName)
+                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
+                }
+            }
+
+            return logger;
+        }
+
         public LoggerManager()
         {
             _loggerList = new ConcurrentDictionary<string, LoggerService>();
@@ -40,14 +62,38 @@ namespace HDByte.Logger
             myThread.Start();
         }
 
+        public bool IsLoggerActive(string name)
+        {
+            return _loggerList.ContainsKey(name);
+        }
+
+        public LoggerService GetLogger(string name)
+        {
+            if (IsLoggerActive(name))
+            {
+                return _loggerList[name];
+            } else
+            {
+                throw new Exception($"Logger with a name of {name} does not exist.");
+            }
+        }
+
         public LoggerService CreateLogger(string name = null)
         {
-            var logger = new LoggerService(name);
-            logger._pendingMessages = _pendingMessages;
+            lock (_padLock)
+            {
+                if (!IsLoggerActive(name))
+                {
+                    var logger = new LoggerService(name);
+                    logger._pendingMessages = _pendingMessages;
+                    _loggerList.TryAdd(name, logger);
 
-            _loggerList.TryAdd(name, logger);
-
-            return logger;
+                    return logger;
+                } else
+                {
+                    throw new Exception($"Logger with name '{name}' already exists.");
+                }
+            }
         }
 
         private void Loop()

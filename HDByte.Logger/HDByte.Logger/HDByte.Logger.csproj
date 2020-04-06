@@ -9,6 +9,7 @@
     <PackageProjectUrl>https://github.com/hdbyte/Logger</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hdbyte/Logger</RepositoryUrl>
     <RepositoryType>Github</RepositoryType>
+    <Description>Simple and easy to use Logger package.</Description>
   </PropertyGroup>
 
 </Project>
