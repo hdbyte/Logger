@@ -103,7 +103,7 @@ namespace HDByte.Logger
             while (_pendingMessages.TryTake(out message, Timeout.Infinite, tokenSource.Token))
             {
                 var target = message.Target;
-                _loggerList[target].Log(message);
+                _loggerList[target].PerformLogAction(message);
             }
         }
     }

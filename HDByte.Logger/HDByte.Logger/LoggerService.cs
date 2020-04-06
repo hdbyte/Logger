@@ -33,7 +33,7 @@ namespace HDByte.Logger
             _pendingMessages.Add(LogMessage.Create(Name, timestamp, importance, message));
         }
 
-        public void Log(LogMessage message)
+        public void PerformLogAction(LogMessage message)
         {
             foreach(IListener listener in _listeners)
             {
