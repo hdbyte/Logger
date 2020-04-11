@@ -1,6 +1,13 @@
 # Logger
 
 ## Getting Started
+This project is still in the early stages of development. Semantic versision will start with 2.0.0 release. For the 1.x.x release, expect backwards compatiblity changes with minor updates, but not patch updates.
+
+### Differences between 1.2.0 and 1.3.0
+Add EnableTraceLogger() to enable the DefaultTraceLogger to create a seperate file for trace level logging.
+Changed save file locations of DefaultLogger
+Removed LogLevel.Information and replaced it with LogLevel.Info
+
 ```csharp
 LoggerService Log;
 var manager = LoggerManager.GetLoggerManager();
@@ -19,7 +26,7 @@ Log.Fatal("fatal error, blah blah happened");
 ```csharp
 Log.Trace
 Log.Debug
-Log.Information
+Log.Info
 Log.Warning
 Log.Error
 Log.Fatal
@@ -47,9 +54,16 @@ Acceptable Variables
 * message - The actual log message to be logged.
 
 ## Default Debugging Logger
-This logger stores files in C:\Logs\{processname}\{timestamp}.txt
+This logger stores files in C:\Logs\{processname}\{timestamp}\debug.txt which logs all Log.Debug level and above messages.
+
+If EnableTraceLogger() is performed then Default Logger will also create a trace.txt file which logs all Log.Trace level and above messages.
 
 ```csharp
-var Log = LoggerManager.GetLoggerManager().GetDefaultDebuggingLogger();
-Log.Information("information only.......");
+var Log = LoggerManager.GetLoggerManager().GetDefaultLogger();
+Log.Info("information only.......");
 ```
+
+```csharp
+var Log = LoggerManager.GetLoggerManager().EnableTraceLogger();
+Log.Info("information only.......");
+Log.Trace("trace test log");
