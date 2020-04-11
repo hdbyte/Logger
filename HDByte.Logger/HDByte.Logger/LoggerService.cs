@@ -73,7 +73,7 @@ namespace HDByte.Logger
 
         public void Information(string message)
         {
-            Push(LoggingLevel.Information, message);
+            Push(LoggingLevel.Info, message);
         }
     }
 }

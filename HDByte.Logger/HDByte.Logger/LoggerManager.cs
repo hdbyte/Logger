@@ -13,9 +13,9 @@ namespace HDByte.Logger
         private readonly BlockingCollection<LogMessage> _pendingMessages;
         private Thread myThread;
         private static readonly object _padLock = new object();
-        private readonly object _padLockDebugging = new object();
+        private readonly object _padLockDefaultLogger = new object();
         private static LoggerManager _instance = null;
-
+        public static bool DefaultTraceLoggerEnabled = false;
         public static LoggerManager GetLoggerManager()
         {
             if (_instance == null)
@@ -36,7 +36,7 @@ namespace HDByte.Logger
         {
             LoggerService logger;
 
-            lock (_padLockDebugging)
+            lock (_padLockDefaultLogger)
             {
                 var loggerName = "DefaultLogger";
                 if (IsLoggerActive(loggerName))
@@ -45,7 +45,10 @@ namespace HDByte.Logger
                 } else
                 {
                     logger = CreateLogger(loggerName)
-                        .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
+                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\debug.txt"));
+
+                    if (DefaultTraceLoggerEnabled)
+                        logger.AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\trace.txt"));
                 }
             }
 

@@ -6,7 +6,7 @@
 
         Debug = 2,
 
-        Information = 4,
+        Info = 4,
 
         Warning = 6,
 

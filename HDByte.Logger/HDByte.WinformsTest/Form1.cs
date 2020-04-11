@@ -22,14 +22,15 @@ namespace HDByte.WinformsTest
         {
             InitializeComponent();
 
-            var manager = LoggerManager.GetLoggerManager();
+            var manager = LoggerManager.GetLoggerManager().EnableTraceLogger();
             Log = manager.CreateLogger("TestRun")
                 .AttachListener(LoggingLevel.Trace, new ConsoleListener());
 
-
-            Log2 = manager.GetDefaultDebuggingLogger();
+            Log2 = manager.GetDefaultLogger();
 
             Log.Trace("Form1 complete!");
+            Log2.Trace("trace only");
+            Log2.Debug("debug only");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,7 +42,7 @@ namespace HDByte.WinformsTest
         {
             Log2.Fatal("Button 2 Clicked! Fatal Error");
 
-            var xx = LoggerManager.GetLoggerManager().GetDefaultDebuggingLogger();
+            var xx = LoggerManager.GetLoggerManager().GetDefaultLogger();
 
             xx.Information("information only.......");
         }
