@@ -13,6 +13,9 @@ namespace HDByte.Logger.Listeners
         private string _format = "$$[timestamp]$$|$$[level]$$|$$[message]$$";
         private string _fileName;
 
+        // This was added as static because sometimes if two FileListener's are used, two different folders are created because the ms portion of the time changed between creation of the listeners
+        private static DateTime LaunchDateTime = DateTime.Now;
+
         public FileListener(string fileName, string format = null)
         {
             if (!String.IsNullOrEmpty(format))
@@ -22,7 +25,7 @@ namespace HDByte.Logger.Listeners
             MatchCollection tsCollection = Regex.Matches(fileName, tsExpression);
             foreach(Match tsMatch in tsCollection)
             {
-                fileName = fileName.Replace($"$$[timestamp={tsMatch.Value}]$$", DateTime.Now.ToString(tsMatch.Value));
+                fileName = fileName.Replace($"$$[timestamp={tsMatch.Value}]$$", LaunchDateTime.ToString(tsMatch.Value));
             }
 
             var pnExpression = @"\b\$\$\[processname\]\$\$\b";

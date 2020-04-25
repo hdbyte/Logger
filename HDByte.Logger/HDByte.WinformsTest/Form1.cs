@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HDByte.Logger;
@@ -45,6 +46,17 @@ namespace HDByte.WinformsTest
             var xx = LoggerManager.GetLoggerManager().GetDefaultLogger();
 
             xx.Information("information only.......");
+
+            Thread.Sleep(500);
+
+            var manager = LoggerManager.GetLoggerManager();
+            manager.CreateLogger("TimestampTest")
+                .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\timestamptest.txt", "$$[timestamp]$$    $$[level]$$   $$[message]$$"));
+
+
+            var timestampTest = manager.GetLogger("TimestampTest");
+
+            timestampTest.Information("YO, does this have the sametimestamp?");
         }
     }
 }
