@@ -37,6 +37,7 @@ namespace HDByte.WinformsTest
         private void button1_Click(object sender, EventArgs e)
         {
             Log.Debug("Button 1 Clicked!");
+            Log2.Error("Button 1 Clicked!");
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -57,6 +58,18 @@ namespace HDByte.WinformsTest
             var timestampTest = manager.GetLogger("TimestampTest");
 
             timestampTest.Information("YO, does this have the sametimestamp?");
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            LoggerConfig.SetCustomVariable("testLol", "NintendoSwitch");
+
+            var manager = LoggerManager.GetLoggerManager();
+            manager.CreateLogger("CustomTest")
+                .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\$$[custom=testLol]$$\custom.txt", "$$[message]$$"));
+            var Logger = manager.GetLogger("CustomTest");
+
+            Logger.Information("This is a custom variable test");
         }
     }
 }
