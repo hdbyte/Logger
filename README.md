@@ -38,13 +38,14 @@ LoggerService Log;
 var manager = LoggerManager.GetLoggerManager();
 Log = manager.CreateLogger("TestLogger")
     .AttachListener(LoggingLevel.Debug, new ConsoleListener(@"$$[shorttimestamp]$$ - $$[level]$$ - $$[message]$$"))
-    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt", "$$[timestamp]$$    $$[level]$$   $$[message]$$"));
+    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt", "$$[timestamp]$$  -  $$[level]$$ - $$[message]$$"));
 ```
 
 ### Custom Filename Formats for FileListener
 Acceptable Variables
 * processname = Name of process currently being ran.
 * timestamp= - This uses Datetime.ToString() formatting.
+* custom=NAMEHERE       Replace NAMEHERE with the variable name used by using LoggerConfig.AddCustomVariable("NAMEHERE", "value");
 
 ### Custom Message Formats
 Acceptable Variables
