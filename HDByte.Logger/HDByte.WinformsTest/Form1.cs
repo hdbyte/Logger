@@ -44,20 +44,20 @@ namespace HDByte.WinformsTest
         {
             Log2.Fatal("Button 2 Clicked! Fatal Error");
 
-            var xx = LoggerManager.GetLoggerManager().GetDefaultLogger();
+            var xx = LoggerManager.GetLoggerManager().EnableTraceLogger().GetDefaultLogger();
 
-            xx.Information("information only.......");
+            xx.Info("information only.......");
 
             Thread.Sleep(500);
 
             var manager = LoggerManager.GetLoggerManager();
             manager.CreateLogger("TimestampTest")
-                .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\timestamptest.txt", "$$[timestamp]$$    $$[level]$$   $$[message]$$"));
+                .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[launchtimestamp=yyyy-MM-dd HH_mm_ss]$$\timestamptest.txt", "$$[timestamp]$$    $$[level]$$   $$[message]$$"));
 
 
             var timestampTest = manager.GetLogger("TimestampTest");
 
-            timestampTest.Information("YO, does this have the sametimestamp?");
+            timestampTest.Info("YO, does this have the sametimestamp?");
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -65,11 +65,15 @@ namespace HDByte.WinformsTest
             LoggerConfig.SetCustomVariable("testLol", "NintendoSwitch");
 
             var manager = LoggerManager.GetLoggerManager();
+
             manager.CreateLogger("CustomTest")
                 .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\$$[custom=testLol]$$\custom.txt", "$$[message]$$"));
             var Logger = manager.GetLogger("CustomTest");
 
-            Logger.Information("This is a custom variable test");
+            Logger.Info("This is a custom variable test");
+
+            Thread.Sleep(500);  // Give the logging service enough time to process the message before logger is actually removed
+            manager.RemoveLogger("CustomTest");
         }
     }
 }

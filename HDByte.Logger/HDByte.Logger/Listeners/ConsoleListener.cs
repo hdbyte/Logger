@@ -9,6 +9,7 @@ namespace HDByte.Logger.Listeners
 
         private string _messageFormat = "$$[shorttimestamp]$$|$$[level]$$|$$[message]$$";
 
+        public bool IsRunning { get; private set; }
         public ConsoleListener(string format = null)
         {
             if (!String.IsNullOrEmpty(format))
@@ -17,16 +18,19 @@ namespace HDByte.Logger.Listeners
 
         public void Start()
         {
-
+            IsRunning = true;
         }
 
         public void End()
         {
-
+            IsRunning = false;
         }
 
         public void LogAction(LogMessage message)
         {
+            if (!IsRunning)
+                return;
+
             if (message.Importance >= MinimumImportance)
             {
                 string formattedMessage = ListenerService.FormatMessage(_messageFormat, message);

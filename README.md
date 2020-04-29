@@ -3,10 +3,18 @@
 ## Getting Started
 This project is still in the early stages of development. Semantic versision will start with 2.0.0 release. For the 1.x.x release, expect backwards compatiblity changes with minor updates, but not patch updates.
 
-### Differences between 1.2.0 and 1.3.0
+### Notes
 Add EnableTraceLogger() to enable the DefaultTraceLogger to create a seperate file for trace level logging.
-Changed save file locations of DefaultLogger
-Removed LogLevel.Information and replaced it with LogLevel.Info
+Must use EnableTraceLogger() before GetDefaultLogger() is ever called
+
+### 1.4.0 -> 2.0.0
+Added LoggerManager unit tests.
+Add RemoveLogger(string name)
+Changed LoggerService.Information to LoggerService.Info (bug from v1.4)
+Changed 'timestamp' in FileListener to use the current Datetime.Now instead of launch time 
+Added 'launchtimestamp' in FileListener that uses the DateTime of when the app was first loaded
+Fixed bug in FileListener which prevented $$[processname]$$ from being evaluated if there was no valid $$[timestamp=xxxxx]$$ to be evaluated
+
 
 ```csharp
 LoggerService Log;
@@ -43,8 +51,9 @@ Log = manager.CreateLogger("TestLogger")
 
 ### Custom Filename Formats for FileListener
 Acceptable Variables
-* processname = Name of process currently being ran.
-* timestamp= - This uses Datetime.ToString() formatting.
+* processname           Name of process currently being ran.
+* launchtimestamp=      Uses the DateTime.Now of when LoggerConfig was first initialized
+* timestamp=HH_mm_ss    This uses Datetime.ToString() formatting, customize it to your hearts content.
 * custom=NAMEHERE       Replace NAMEHERE with the variable name used by using LoggerConfig.AddCustomVariable("NAMEHERE", "value");
 
 ### Custom Message Formats
@@ -65,6 +74,6 @@ Log.Info("information only.......");
 ```
 
 ```csharp
-var Log = LoggerManager.GetLoggerManager().EnableTraceLogger();
+var Log = LoggerManager.GetLoggerManager().EnableTraceLogger().GetDefaultLogger(;
 Log.Info("information only.......");
 Log.Trace("trace test log");

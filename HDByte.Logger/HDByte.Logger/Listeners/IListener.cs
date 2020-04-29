@@ -7,5 +7,7 @@
         void LogAction(LogMessage message);
         void Start();
         void End();
+
+        bool IsRunning { get; }
     }
 }

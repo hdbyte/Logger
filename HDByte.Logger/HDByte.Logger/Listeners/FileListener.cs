@@ -19,40 +19,44 @@ namespace HDByte.Logger.Listeners
         private object PadLock = new object();
         public StringBuilder Buffer = new StringBuilder();
         private bool IsCompleted;
-
-        // This was added as static because sometimes if two FileListener's are used, two different folders can be created because the ms portion of the time changed between creation of the listeners
-        private static DateTime LaunchDateTime = DateTime.Now;
+        public bool IsRunning { get; private set; }
 
         public FileListener(string fileName, string format = null)
         {
             if (!String.IsNullOrEmpty(format))
                 _format = format;
 
-            //Read the timestamp format used and setup filename with correct format
+            // Replace 'launchtimestamp' with the timestamp format of when the LoggerManager() class was created
+            var ltsExpression = @"(?<=\$\$\[launchtimestamp=)(.*?)(?=\]\$\$)";
+            MatchCollection ltsCollection = Regex.Matches(fileName, ltsExpression);
+            foreach(Match ltsMatch in ltsCollection)
+            {
+                fileName = fileName.Replace($"$$[launchtimestamp={ltsMatch.Value}]$$", LoggerConfig.LaunchDateTime.ToString(ltsMatch.Value));
+            }
+
+            // Replace 'timestamp' with provided timestamp format
             var tsExpression = @"(?<=\$\$\[timestamp=)(.*?)(?=\]\$\$)";
-            MatchCollection tsCollection = Regex.Matches(fileName, tsExpression);
-            foreach(Match tsMatch in tsCollection)
+            var tsCollection = Regex.Matches(fileName, tsExpression);
+            foreach (Match tsMatch in tsCollection)
             {
-                fileName = fileName.Replace($"$$[timestamp={tsMatch.Value}]$$", LaunchDateTime.ToString(tsMatch.Value));
+                fileName = fileName.Replace($"$$[timestamp={tsMatch.Value}]$$", DateTime.Now.ToString(tsMatch.Value));
             }
 
-            // Check the filename for any custom variables and replace them with what's in the LoggerConfig static Dictionary
-            var tsExpression2 = @"(?<=\$\$\[custom=)(.*?)(?=\]\$\$)";
-            MatchCollection tsCollection2 = Regex.Matches(fileName, tsExpression2);
-            foreach (Match tsMatch in tsCollection2)
+            // Replace 'custom=XXXXX' with the value that's stored in LoggerConfig
+            var lcExpression = @"(?<=\$\$\[custom=)(.*?)(?=\]\$\$)";
+            var lcCollection = Regex.Matches(fileName, lcExpression);
+            foreach (Match lcMatch in lcCollection)
             {
-                fileName = fileName.Replace($"$$[custom={tsMatch.Value}]$$", LoggerConfig.GetCustomVariable(tsMatch.Value));
+                fileName = fileName.Replace($"$$[custom={lcMatch.Value}]$$", LoggerConfig.GetCustomVariable(lcMatch.Value));
             }
 
-            var pnExpression = @"\b\$\$\[processname\]\$\$\b";
-            MatchCollection pnCollection = Regex.Matches(fileName, pnExpression);
+            // Replace 'processname' with the name of the running Application
+            var pnExpression = @"(?<=\$\$\[processname\]\$\$)";
+            var pnCollection = Regex.Matches(fileName, pnExpression);
             var currentProc = Process.GetCurrentProcess();
             var splitProcessName = currentProc.ProcessName.Split('.');
-
-            foreach (Match pnMatch in tsCollection)
-            {
+            if (pnCollection.Count > 0)
                 fileName = fileName.Replace($"$$[processname]$$", splitProcessName[splitProcessName.Length - 1]);
-            }
 
             _fileName = fileName;
         }
@@ -76,6 +80,8 @@ namespace HDByte.Logger.Listeners
 
         private void LogThreadConsumer()
         {
+            IsRunning = true;
+
             while (!IsCompleted)
             {
                 string toWrite;
@@ -94,9 +100,10 @@ namespace HDByte.Logger.Listeners
             try
             {
                 _stream.Close();
+                IsRunning = false;
             } catch(Exception ex)
             {
-
+                throw; // lol baller
             }
             
         }

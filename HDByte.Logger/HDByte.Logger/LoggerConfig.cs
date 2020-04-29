@@ -6,6 +6,8 @@ namespace HDByte.Logger
 {
     public static class LoggerConfig
     {
+        public static DateTime LaunchDateTime = DateTime.Now;
+
         private static Dictionary<string, string> CustomVariables = new Dictionary<string, string>();
 
         public static string GetCustomVariable(string name)

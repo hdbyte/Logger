@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDByte.Logger", "HDByte.Logger\HDByte.Logger.csproj", "{EBF1925A-4382-401B-A880-58A78F7344F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDByte.Logger", "HDByte.Logger\HDByte.Logger.csproj", "{EBF1925A-4382-401B-A880-58A78F7344F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDByte.WinformsTest", "HDByte.WinformsTest\HDByte.WinformsTest.csproj", "{F09B564F-7BD3-4152-86D8-EE67D5C71697}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HDByte.LoggerTests", "HDByte.LoggerTests\HDByte.LoggerTests.csproj", "{EE7282C9-57C6-45DD-9E8E-B5519EA3BF96}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F09B564F-7BD3-4152-86D8-EE67D5C71697}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F09B564F-7BD3-4152-86D8-EE67D5C71697}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F09B564F-7BD3-4152-86D8-EE67D5C71697}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7282C9-57C6-45DD-9E8E-B5519EA3BF96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7282C9-57C6-45DD-9E8E-B5519EA3BF96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7282C9-57C6-45DD-9E8E-B5519EA3BF96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7282C9-57C6-45DD-9E8E-B5519EA3BF96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

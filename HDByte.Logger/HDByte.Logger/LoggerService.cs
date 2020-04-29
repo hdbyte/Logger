@@ -1,6 +1,7 @@
 ﻿using HDByte.Logger.Listeners;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace HDByte.Logger
 {
@@ -9,6 +10,8 @@ namespace HDByte.Logger
         public string Name { get; set; }
         public BlockingCollection<IListener> _listeners;
         public BlockingCollection<LogMessage> _pendingMessages { get; set; }
+
+        private bool isActive;
 
         public LoggerService(string name)
         {
@@ -22,6 +25,7 @@ namespace HDByte.Logger
             listener.MinimumImportance = importance;
             _listeners.Add(listener);
             listener.Start();
+            isActive = true;
 
             return this;
         }
@@ -35,9 +39,36 @@ namespace HDByte.Logger
 
         public void PerformLogAction(LogMessage message)
         {
+            if (!isActive)
+                return;
+
             foreach(IListener listener in _listeners)
             {
                 listener.LogAction(message);
+            }
+        }
+
+        public void Stop()
+        {
+            isActive = false;
+            foreach (IListener listener in _listeners)
+            {
+                listener.End();
+
+                var sw = new Stopwatch();
+                sw.Start();
+                bool completed = false;
+                while (!completed)
+                {
+                    if (!listener.IsRunning)
+                        completed = true;
+
+                    if (sw.Elapsed.TotalMilliseconds >= 500)
+                        break;
+                }
+
+                if (!completed)
+                    throw new Exception($"Unable to end Listener process {listener.GetType().ToString()}");
             }
         }
 
@@ -71,7 +102,7 @@ namespace HDByte.Logger
             Push(LoggingLevel.Fatal, message);
         }
 
-        public void Information(string message)
+        public void Info(string message)
         {
             Push(LoggingLevel.Info, message);
         }

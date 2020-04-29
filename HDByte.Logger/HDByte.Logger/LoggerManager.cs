@@ -16,6 +16,7 @@ namespace HDByte.Logger
         private readonly object _padLockDefaultLogger = new object();
         private static LoggerManager _instance = null;
         public static bool DefaultTraceLoggerEnabled = false;
+
         public static LoggerManager GetLoggerManager()
         {
             if (_instance == null)
@@ -45,14 +46,21 @@ namespace HDByte.Logger
                 } else
                 {
                     logger = CreateLogger(loggerName)
-                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\debug.txt"));
+                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[launchtimestamp=yyyy-MM-dd HH_mm_ss]$$\debug.txt"));
 
                     if (DefaultTraceLoggerEnabled)
-                        logger.AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\trace.txt"));
+                        logger.AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[launchtimestamp=yyyy-MM-dd HH_mm_ss]$$\trace.txt"));
                 }
             }
 
             return logger;
+        }
+
+        public LoggerManager EnableTraceLogger()
+        {
+            DefaultTraceLoggerEnabled = true;
+
+            return this;
         }
 
         public LoggerManager()
@@ -70,6 +78,20 @@ namespace HDByte.Logger
             return _loggerList.ContainsKey(name);
         }
 
+        public bool RemoveLogger(string name)
+        {
+            if (IsLoggerActive(name))
+            {
+                if (_loggerList.TryRemove(name, out LoggerService end))
+                {
+                    end.Stop();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public LoggerService GetLogger(string name)
         {
             if (IsLoggerActive(name))
@@ -77,7 +99,7 @@ namespace HDByte.Logger
                 return _loggerList[name];
             } else
             {
-                throw new Exception($"Logger with a name of {name} does not exist.");
+                throw new Exceptions.LoggerNotFoundException($"Logger with a name of {name} does not exist.");
             }
         }
 
@@ -94,7 +116,7 @@ namespace HDByte.Logger
                     return logger;
                 } else
                 {
-                    throw new Exception($"Logger with name '{name}' already exists.");
+                    throw new Exceptions.LoggerAlreadyExistsException($"Logger with name '{name}' already exists.");
                 }
             }
         }
@@ -106,7 +128,8 @@ namespace HDByte.Logger
             while (_pendingMessages.TryTake(out message, Timeout.Infinite, tokenSource.Token))
             {
                 var target = message.Target;
-                _loggerList[target].PerformLogAction(message);
+                if (_loggerList.ContainsKey(target))
+                    _loggerList[target].PerformLogAction(message);
             }
         }
     }
