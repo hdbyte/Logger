@@ -4,7 +4,7 @@ using System;
 
 namespace HDByte.LoggerTests
 {
-    public class Tests
+    public class LoggerManagerTests
     {
         LoggerManager manager;
 
