@@ -67,10 +67,5 @@ namespace HDByte.LoggerTests
             });
         }
 
-        [Test]
-        public void GetLogger_Works()
-        {
-           
-        }
     }
 }

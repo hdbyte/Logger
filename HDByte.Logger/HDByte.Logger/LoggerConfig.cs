@@ -10,6 +10,7 @@ namespace HDByte.Logger
 
         private static Dictionary<string, string> CustomVariables = new Dictionary<string, string>();
 
+        public static int FileListenerBufferTime = 50;
         public static string GetCustomVariable(string name)
         {
             if (!CustomVariables.ContainsKey(name))
