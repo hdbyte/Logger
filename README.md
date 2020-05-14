@@ -1,11 +1,23 @@
 # Logger
 
-## Getting Started
-This project is still in the early stages of development. Semantic versision will start with 2.0.0 release. For the 1.x.x release, expect backwards compatiblity changes with minor updates, but not patch updates.
+
+[![Nuget Version](https://img.shields.io/nuget/v/HDByte.Logger.svg?style=flat-square)](https://www.nuget.org/packages/HDByte.Logger/)
+![Downloads](https://img.shields.io/nuget/dt/HDByte.Logger)
+![Lines Of Code](https://tokei.rs/b1/github/hdbyte/logger)
+
+![GitHub issues](https://img.shields.io/github/issues/hdbyte/logger?style=flat-square)
+
+## Quick Introduction
+This project is still in the early stages of development. 
 
 ### Notes
 Add EnableTraceLogger() to enable the DefaultTraceLogger to create a seperate file for trace level logging.
 Must use EnableTraceLogger() before GetDefaultLogger() is ever called
+
+### 2.0.0 -> 2.1.0
+Fix issue #2 which makes all file listeners use a single thread. Previous versions of Logger would create a new thread for every FileListener created which is a waste of resources.
+Add LoggerConfig.FileListenerBufferTime which controls how often the FileListener's will write out their buffer to their designated files.
+Added more tests.
 
 ### 1.4.0 -> 2.0.0
 Added LoggerManager unit tests.
