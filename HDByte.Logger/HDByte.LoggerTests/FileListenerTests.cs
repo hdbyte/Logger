@@ -117,5 +117,32 @@ namespace HDByte.LoggerTests
             Assert.That(lines[0], Is.EqualTo("levelTestMessage"));
             Assert.That(lines.Length, Is.EqualTo(1));
         }
+
+        [Test]
+        public void MultipleLogFiles()
+        {
+            var Log = manager.CreateLogger("multi1")
+                .AttachListener(LoggingLevel.Debug, new FileListener(LogFileDirectory + "multi1.log", "$$[message]$$"));
+
+            var Log2 = manager.CreateLogger("multi2")
+                .AttachListener(LoggingLevel.Debug, new FileListener(LogFileDirectory + "multi2.log", "$$[message]$$"));
+
+            Log.Debug("multi1");
+            Log2.Debug("multi2");
+            Log2.Debug("multi2_2nd line");
+
+            Thread.Sleep(300);
+            Assert.That(manager.RemoveLogger("multi1"));
+            Assert.That(manager.RemoveLogger("multi2"));
+            Thread.Sleep(300);
+
+            string[] lines = System.IO.File.ReadAllLines(LogFileDirectory + "multi1.log");
+            Assert.That(lines[0], Is.EqualTo("multi1"));
+            Assert.That(lines.Length, Is.EqualTo(1));
+
+            string[] lines2 = System.IO.File.ReadAllLines(LogFileDirectory + "multi2.log");
+            Assert.That(lines2[0], Is.EqualTo("multi2"));
+            Assert.That(lines2.Length, Is.EqualTo(2));
+        }
     }
 }
