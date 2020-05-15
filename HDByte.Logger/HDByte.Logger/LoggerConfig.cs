@@ -14,7 +14,7 @@ namespace HDByte.Logger
         public static string GetCustomVariable(string name)
         {
             if (!CustomVariables.ContainsKey(name))
-                throw new Exception($"No Custom Variable Name of '{name} exists in LoggerConfig");
+                throw new Exception($"No Custom Variable Name of '{name}' exists in LoggerConfig.");
 
             return CustomVariables[name];
         }
