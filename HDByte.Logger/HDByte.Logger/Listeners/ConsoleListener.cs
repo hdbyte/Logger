@@ -4,6 +4,7 @@ namespace HDByte.Logger.Listeners
 {
     public class ConsoleListener : IListener
     {
+        public Guid ID { get; set; }
         public string Name { get; set; }
         public LoggingLevel MinimumImportance { set; get; }
 
@@ -14,6 +15,8 @@ namespace HDByte.Logger.Listeners
         {
             if (!String.IsNullOrEmpty(format))
                 _messageFormat = format;
+
+            ID = Guid.NewGuid();
         }
 
         public void Start()

@@ -1,6 +1,5 @@
 # Logger
 
-
 [![Nuget Version](https://img.shields.io/nuget/v/HDByte.Logger.svg?style=flat-square)](https://www.nuget.org/packages/HDByte.Logger/)
 ![Downloads](https://img.shields.io/nuget/dt/HDByte.Logger)
 ![Lines Of Code](https://tokei.rs/b1/github/hdbyte/logger)
@@ -8,35 +7,16 @@
 ![GitHub issues](https://img.shields.io/github/issues/hdbyte/logger?style=flat-square)
 
 ## Quick Introduction
-This project is still in the early stages of development. 
+This project is still in the early stages of development. Changelog.md contains a list of changes between versions.
 
-### Notes
-Add EnableTraceLogger() to enable the DefaultTraceLogger to create a seperate file for trace level logging.
-Must use EnableTraceLogger() before GetDefaultLogger() is ever called
-
-### 2.0.0 -> 2.1.0
-Fix issue #2 which makes all file listeners use a single thread. Previous versions of Logger would create a new thread for every FileListener created which is a waste of resources.
-Add LoggerConfig.FileListenerBufferTime which controls how often the FileListener's will write out their buffer to their designated files.
-Added more tests.
-
-### 1.4.0 -> 2.0.0
-Added LoggerManager unit tests.
-Add RemoveLogger(string name)
-Changed LoggerService.Information to LoggerService.Info (bug from v1.4)
-Changed 'timestamp' in FileListener to use the current Datetime.Now instead of launch time 
-Added 'launchtimestamp' in FileListener that uses the DateTime of when the app was first loaded
-Fixed bug in FileListener which prevented $$[processname]$$ from being evaluated if there was no valid $$[timestamp=xxxxx]$$ to be evaluated
-
-
+## Examples
 ```csharp
-LoggerService Log;
 var manager = LoggerManager.GetLoggerManager();
-Log = manager.CreateLogger("TestLogger")
+LoggerService Log = manager.CreateLogger("TestLogger")
     .AttachListener(LoggingLevel.Debug, new ConsoleListener())
-    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
+    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\LogFiles\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt"));
 ```
 
-### Examples
 ```csharp
 Log.Debug("Button 1 Clicked!");
 Log.Fatal("fatal error, blah blah happened");
@@ -47,18 +27,17 @@ Log.Fatal("fatal error, blah blah happened");
 Log.Trace
 Log.Debug
 Log.Info
-Log.Warning
+Log.Warn
 Log.Error
 Log.Fatal
 ```
 
 ## Advanced Examples (Custom Message Formats)
 ```csharp
-LoggerService Log;
 var manager = LoggerManager.GetLoggerManager();
-Log = manager.CreateLogger("TestLogger")
+LoggerService Log = manager.CreateLogger("TestLogger")
     .AttachListener(LoggingLevel.Debug, new ConsoleListener(@"$$[shorttimestamp]$$ - $$[level]$$ - $$[message]$$"))
-    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt", "$$[timestamp]$$  -  $$[level]$$ - $$[message]$$"));
+    .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\LogFiles\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$.txt", "$$[timestamp]$$  -  $$[level]$$ - $$[message]$$"));
 ```
 
 ### Custom Filename Formats for FileListener
@@ -78,14 +57,25 @@ Acceptable Variables
 ## Default Debugging Logger
 This logger stores files in C:\Logs\{processname}\{timestamp}\debug.txt which logs all Log.Debug level and above messages.
 
-If EnableTraceLogger() is performed then Default Logger will also create a trace.txt file which logs all Log.Trace level and above messages.
-
 ```csharp
 var Log = LoggerManager.GetLoggerManager().GetDefaultLogger();
 Log.Info("information only.......");
 ```
 
+Default Logger can also log trace level messages if enabled. These logs are logged to the same folder as debug.txt but is named trace.txt
+There are two ways to enable the default Trace Level logger, shown below
+
 ```csharp
-var Log = LoggerManager.GetLoggerManager().EnableTraceLogger().GetDefaultLogger(;
+var Log = LoggerManager.GetLoggerManager().GetDefaultLogger(true);
 Log.Info("information only.......");
 Log.Trace("trace test log");
+```
+
+```csharp
+var manager = LoggerManager.GetLoggerManager();
+var Log = manager.GetDefaultLogger();
+manager.EnableTraceLogger();
+
+Log.Info("information only.......");
+Log.Trace("trace test log");
+```

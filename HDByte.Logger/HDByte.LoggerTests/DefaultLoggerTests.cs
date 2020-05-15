@@ -4,12 +4,13 @@ using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 
 namespace HDByte.LoggerTests
 {
     public class DefaultLoggerTests
     {
-        LoggerManager manager;
+        
         static string debugFileName;
         static string traceFileName;
 
@@ -25,14 +26,83 @@ namespace HDByte.LoggerTests
 
             if (Directory.Exists(Path.GetDirectoryName($@"C:\Logs\{processName}\")))
                 Directory.Delete(Path.GetDirectoryName($@"C:\Logs\{processName}\"), true);
+        }
 
-            manager = LoggerManager.GetLoggerManager();
-            var defaultLog = manager.EnableTraceLogger().GetDefaultLogger();
+        [TearDown]
+        public void TearDown()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+            manager.RemoveLogger("DefaultLogger");
+            LoggerManager.Nullify();
         }
 
         [Test]
-        public void CreatesDirectoryAndFile()
+        public void CreatesDirectoryAndDefaultLogFile()
         {
+            //Thread.Sleep(100);
+            var manager = LoggerManager.GetLoggerManager();
+            var defaultLog = manager.GetDefaultLogger();
+            Assert.That(File.Exists(debugFileName));
+
+            Assert.That(!File.Exists(traceFileName));
+
+            manager = null;
+        }
+
+        [Test]
+        public void CreatesDefaultTraceFile_EnableBeforeGetting()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+            manager.EnableTraceLogger();
+            manager.EnableTraceLogger(); // make it doesn't get created twice
+
+            var defaultLog = manager.GetDefaultLogger();
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(File.Exists(traceFileName));
+        }
+
+        [Test]
+        public void CreatesDefaultTraceFile_EnableUsingParameter()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+
+            var defaultLog = manager.GetDefaultLogger(true);
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(File.Exists(traceFileName));
+
+            defaultLog = manager.GetDefaultLogger(true); // make sure it doesn't get created twice
+        }
+
+        [Test]
+        public void CreatesDefaultTraceFile_EnableAfterGettingDebugLogger()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+
+            var defaultLog = manager.GetDefaultLogger();
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(!File.Exists(traceFileName));
+
+            manager.EnableTraceLogger();
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(File.Exists(traceFileName));
+
+            manager.EnableTraceLogger(); // make sure it doesn't get created twice
+        }
+
+        [Test]
+        public void CreatesDefaultTraceFile_EnableAfterGettingDebugLoggerUsingParameter()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+
+            var defaultLog = manager.GetDefaultLogger();
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(!File.Exists(traceFileName));
+
+            defaultLog = manager.GetDefaultLogger(true);
             Assert.That(File.Exists(debugFileName));
             Assert.That(File.Exists(traceFileName));
         }
