@@ -11,6 +11,7 @@ namespace HDByte.Logger.Listeners
 {
     public sealed class FileListener : IListener, IDisposable
     {
+        public Guid ID { get; set; }
         public string Name { get; set; }
         public LoggingLevel MinimumImportance { set; get; }
         private StreamWriter _stream;
@@ -27,6 +28,7 @@ namespace HDByte.Logger.Listeners
                 _format = format;
 
             _fileName = ListenerService.FormatFileName(fileName);
+            ID = Guid.NewGuid();
         }
 
         public void Start()

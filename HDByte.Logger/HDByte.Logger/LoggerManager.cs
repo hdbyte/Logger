@@ -15,8 +15,8 @@ namespace HDByte.Logger
         private static readonly object _padLock = new object();
         private readonly object _padLockDefaultLogger = new object();
         private static LoggerManager _instance = null;
-        public static bool DefaultTraceLoggerEnabled = false;
 
+        private bool defaultTraceLoggerEnabled;
         public static LoggerManager GetLoggerManager()
         {
             if (_instance == null)
@@ -33,32 +33,65 @@ namespace HDByte.Logger
             return _instance;
         }
 
-        public LoggerService GetDefaultLogger()
+        /// <summary>
+        /// Added to null out the instance. Needs to be able to remove all loggers before setting _instance to null.
+        /// </summary>
+        public static void Nullify()
+        {
+            _instance = null;
+        }
+
+        public LoggerService GetDefaultLogger(bool enableTraceLogger = false)
         {
             LoggerService logger;
+            var loggerName = "DefaultLogger";
 
-            lock (_padLockDefaultLogger)
+            if (!IsLoggerActive(loggerName))
             {
-                var loggerName = "DefaultLogger";
-                if (IsLoggerActive(loggerName))
+                lock (_padLockDefaultLogger)
                 {
-                    logger = GetLogger(loggerName);
-                } else
-                {
-                    logger = CreateLogger(loggerName)
-                        .AttachListener(LoggingLevel.Debug, new FileListener(@"C:\Logs\$$[processname]$$\$$[launchtimestamp=yyyy-MM-dd HH_mm_ss]$$\debug.txt"));
+                    if (!IsLoggerActive(loggerName))
+                    {
+                        var debugListener = new FileListener(LoggerConfig.DefaultLoggerPath + "debug.txt");
 
-                    if (DefaultTraceLoggerEnabled)
-                        logger.AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[launchtimestamp=yyyy-MM-dd HH_mm_ss]$$\trace.txt"));
+                        CreateLogger(loggerName)
+                        .AttachListener(LoggingLevel.Debug, debugListener);
+                    }
                 }
+
+                if (enableTraceLogger)
+                {
+                    EnableTraceLogger();
+                }
+                    
+                
+            } else if (!defaultTraceLoggerEnabled & enableTraceLogger)
+            {
+                EnableTraceLogger();
             }
 
+            logger = GetLogger(loggerName);
             return logger;
         }
 
         public LoggerManager EnableTraceLogger()
         {
-            DefaultTraceLoggerEnabled = true;
+            if (!IsLoggerActive("DefaultLogger"))
+            {
+                GetDefaultLogger();
+            }
+
+            if (!defaultTraceLoggerEnabled)
+            {
+                lock (_padLockDefaultLogger)
+                {
+                    defaultTraceLoggerEnabled = true;
+                    var traceListener = new FileListener(LoggerConfig.DefaultLoggerPath + "trace.txt");
+
+                    var log = GetLogger("DefaultLogger");
+                    log.AttachListener(LoggingLevel.Trace, traceListener);
+                }
+            }
 
             return this;
         }

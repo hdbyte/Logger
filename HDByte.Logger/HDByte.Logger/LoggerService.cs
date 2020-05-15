@@ -87,9 +87,9 @@ namespace HDByte.Logger
             Push(LoggingLevel.Debug, message);
         }
 
-        public void Warning(string message)
+        public void Warn(string message)
         {
-            Push(LoggingLevel.Warning, message);
+            Push(LoggingLevel.Warn, message);
         }
 
         public void Error(string message)
