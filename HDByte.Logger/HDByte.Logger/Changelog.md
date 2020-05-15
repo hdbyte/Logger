@@ -1,4 +1,9 @@
-﻿1.4.0 -> 2.0.0
+﻿2.0.0 -> 2.1.0
+Fix issue #2 which makes all file listeners use a single thread. Previous versions of Logger would create a new thread for every FileListener created which is a waste of resources.
+Add LoggerConfig.FileListenerBufferTime which controls how often the FileListener's will write out their buffer to their designated files.
+Added more tests.
+
+1.4.0 -> 2.0.0
 
 Added LoggerManager unit tests.
 Add RemoveLogger(string name)
