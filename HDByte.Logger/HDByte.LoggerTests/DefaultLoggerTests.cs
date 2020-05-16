@@ -106,5 +106,47 @@ namespace HDByte.LoggerTests
             Assert.That(File.Exists(debugFileName));
             Assert.That(File.Exists(traceFileName));
         }
+
+        [Test]
+        public void DebugOnlyWorks()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+            var Log = manager.GetDefaultLogger();
+            Log.Debug("debug!");
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(!File.Exists(traceFileName));
+
+            Thread.Sleep(300);
+            manager.RemoveLogger("DefaultLogger");
+            Thread.Sleep(300);
+
+            string[] lines = File.ReadAllLines(debugFileName);
+            Assert.That(lines.Length, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void DebugAndTraceWorks()
+        {
+            var manager = LoggerManager.GetLoggerManager();
+            var Log = manager.GetDefaultLogger(true);
+            Log.Debug("debug!");
+            Log.Trace("trace!");
+            Log.Trace("trace2!");
+
+            Assert.That(File.Exists(debugFileName));
+            Assert.That(File.Exists(traceFileName));
+
+            Thread.Sleep(300);
+            manager.RemoveLogger("DefaultLogger");
+            LoggerManager.Nullify();
+            Thread.Sleep(300);
+
+            string[] lines = File.ReadAllLines(debugFileName);
+            Assert.That(lines.Length, Is.EqualTo(1));
+
+            string[] lines2 = File.ReadAllLines(traceFileName);
+            Assert.That(lines2.Length, Is.EqualTo(3));
+        }
     }
 }

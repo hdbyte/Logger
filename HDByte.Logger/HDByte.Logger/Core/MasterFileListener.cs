@@ -55,7 +55,6 @@ namespace HDByte.Logger.Core
 
         private void LogThreadConsumer()
         {
-            var x = 0;
             while (!IsCompleted)
             {
                 lock (PadLock)
@@ -63,9 +62,9 @@ namespace HDByte.Logger.Core
                     foreach (KeyValuePair<string, FileListener> fileListener in FileListeners)
                     {
                         fileListener.Value.WriteBuffer();
+                        Debug.WriteLine(fileListener.Value.Name);
                     }
                 }
-                Debug.WriteLine(x++.ToString());
                 Thread.Sleep(LoggerConfig.FileListenerBufferTime);                
             }
         }

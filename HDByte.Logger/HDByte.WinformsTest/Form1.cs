@@ -16,33 +16,32 @@ namespace HDByte.WinformsTest
     public partial class Form1 : Form
     {
         LoggerService Log;
-        LoggerService Log2;
+        LoggerService DefaultLogger;
 
 
         public Form1()
         {
             InitializeComponent();
 
-            var manager = LoggerManager.GetLoggerManager().EnableTraceLogger();
+            var manager = LoggerManager.GetLoggerManager();
+            DefaultLogger = manager.GetDefaultLogger(true);
+
             Log = manager.CreateLogger("TestRun")
                 .AttachListener(LoggingLevel.Trace, new ConsoleListener());
 
-            Log2 = manager.GetDefaultLogger();
-
-            Log.Trace("Form1 complete!");
-            Log2.Trace("trace only");
-            Log2.Debug("debug only");
+            DefaultLogger.Debug("debug only");
+            DefaultLogger.Trace("trace only");
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             Log.Debug("Button 1 Clicked!");
-            Log2.Error("Button 1 Clicked!");
+            DefaultLogger.Error("Button 1 Clicked!");
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Log2.Fatal("Button 2 Clicked! Fatal Error");
+            DefaultLogger.Fatal("Button 2 Clicked! Fatal Error");
 
             var xx = LoggerManager.GetLoggerManager().EnableTraceLogger().GetDefaultLogger();
 
@@ -66,12 +65,14 @@ namespace HDByte.WinformsTest
 
             var manager = LoggerManager.GetLoggerManager();
 
+            var guidx = new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\$$[custom=testLol]$$\custom.txt", "$$[message]$$");
             manager.CreateLogger("CustomTest")
-                .AttachListener(LoggingLevel.Trace, new FileListener(@"C:\Logs\$$[processname]$$\$$[timestamp=yyyy-MM-dd HH_mm_ss]$$\$$[custom=testLol]$$\custom.txt", "$$[message]$$"));
+                .AttachListener(LoggingLevel.Trace, guidx);
             var Logger = manager.GetLogger("CustomTest");
 
             Logger.Info("This is a custom variable test");
 
+            DefaultLogger.Info("button3 clicked");
             Thread.Sleep(500);  // Give the logging service enough time to process the message before logger is actually removed
             manager.RemoveLogger("CustomTest");
         }

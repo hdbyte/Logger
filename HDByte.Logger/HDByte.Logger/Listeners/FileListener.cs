@@ -39,7 +39,7 @@ namespace HDByte.Logger.Listeners
             var master = MasterFileListener.GetMasterFileListener();
             lock (master.PadLock)
             {
-                master.FileListeners[Name] = this;
+                master.FileListeners[ID.ToString()] = this;
             }
         }
 
@@ -48,7 +48,7 @@ namespace HDByte.Logger.Listeners
             var master = MasterFileListener.GetMasterFileListener();
             lock (master.PadLock)
             {
-                master.FileListeners.Remove(Name);
+                master.FileListeners.Remove(ID.ToString());
             }
 
             try
